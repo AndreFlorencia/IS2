@@ -1,2 +1,2 @@
 def string_length(s: str):
-    return len(s)
+    return len(s)+70

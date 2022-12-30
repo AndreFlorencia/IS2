@@ -2,40 +2,44 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS POSTGIS;
 CREATE EXTENSION IF NOT EXISTS POSTGIS_TOPOLOGY;
 
-CREATE TABLE public.teams (
-	id              uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-	name            VARCHAR(250) NOT NULL,
-	created_on      TIMESTAMP NOT NULL DEFAULT NOW(),
-	updated_on      TIMESTAMP NOT NULL DEFAULT NOW()
+CREATE TABLE country (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  nome varchar(50) NOT NULL,
+  geom GEOMETRY,
+  created_on TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_on TIMESTAMP NOT NULL DEFAULT NOW()
+  );
+
+CREATE UNIQUE INDEX CONCURRENTLY index_nome 
+ON country (nome);
+
+ALTER TABLE country 
+ADD CONSTRAINT nome_unique
+UNIQUE USING INDEX index_nome;
+
+
+CREATE TABLE horario (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  fusohorario text NOT NULL,
+  diferencaUTC float,
+  horarioVerao text,
+  created_on TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_on TIMESTAMP NOT NULL DEFAULT NOW(),
+  CONSTRAINT unique_horario_fusohorario UNIQUE (fusohorario)
 );
 
-CREATE TABLE public.countries (
-	id              uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-	name            VARCHAR(250) UNIQUE NOT NULL,
-	geom            GEOMETRY,
-	created_on      TIMESTAMP NOT NULL DEFAULT NOW(),
-	updated_on      TIMESTAMP NOT NULL DEFAULT NOW()
+
+CREATE TABLE station (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name text NOT NULL,
+  class text,
+  country_id uuid REFERENCES country (id),
+  horario_id uuid REFERENCES horario (id),
+  iata text,
+  icao text,
+  pes float,
+  fonte text,
+  created_on TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_on TIMESTAMP NOT NULL DEFAULT NOW(),
+  CONSTRAINT unique_station_name UNIQUE (name)
 );
-
-CREATE TABLE public.players (
-	id              uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-	name            VARCHAR(250) NOT NULL,
-	age             INT NOT NULL,
-	team_id         uuid,
-	country_id      uuid NOT NULL,
-	created_on      TIMESTAMP NOT NULL DEFAULT NOW(),
-	updated_on      TIMESTAMP NOT NULL DEFAULT NOW()
-);
-
-ALTER TABLE players
-    ADD CONSTRAINT players_countries_id_fk
-        FOREIGN KEY (country_id) REFERENCES countries
-            ON DELETE CASCADE;
-
-ALTER TABLE players
-    ADD CONSTRAINT players_teams_id_fk
-        FOREIGN KEY (team_id) REFERENCES teams
-            ON DELETE SET NULL;
-
-
-
