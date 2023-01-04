@@ -1,22 +1,18 @@
-import React, {useEffect, useState} from "react";
-import {Box, CircularProgress, Container, FormControl, InputLabel, MenuItem, Select} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, CircularProgress, Container, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import axios from 'axios';
 
-const DEMO_TEAMS = [
-    {"team": "Manchester United", country: "UK"},
-    {"team": "Manchester City", country: "UK"},
-    {"team": "Chelsea", country: "UK"},
-    {"team": "Tottenham", country: "UK"},
-    {"team": "Fulham", country: "UK"},
+const makeGraphQLRequest = function (query, variables = {}) {
+    return axios({
+        url: '/graphql',
+        method: 'POST',
+        data: {
+            query,
+            variables,
+        },
+    });
+};
 
-    {"team": "Sporting", country: "Portugal"},
-    {"team": "Porto", country: "Portugal"},
-    {"team": "Benfica", country: "Portugal"},
-    {"team": "Braga", country: "Portugal"},
-
-    {"team": "PSG", country: "France"},
-    {"team": "Lyon", country: "France"},
-    {"team": "Olympique de Marseille", country: "France"}
-];
 
 const COUNTRIES = [...new Set(DEMO_TEAMS.map(team => team.country))];
 
@@ -29,8 +25,6 @@ function TopTeams() {
     const [gqlData, setGQLData] = useState(null);
 
     useEffect(() => {
-        //!FIXME: this is to simulate how to retrieve data from the server
-        //!FIXME: the entities server URL is available on process.env.REACT_APP_API_ENTITIES_URL
         setProcData(null);
         setGQLData(null);
 
@@ -40,21 +34,34 @@ function TopTeams() {
                 setProcData(DEMO_TEAMS.filter(t => t.country === selectedCountry));
             }, 500);
 
-            setTimeout(() => {
+            // Make the GraphQL request to get the data for the selected country
+            const query = `
+            query GetCountries($name: String!) {
+              countries(name: $name) {
+                name
+              }
+            }
+          `;
+
+            const variables = {
+                country: selectedCountry,
+            };
+
+            makeGraphQLRequest(query, variables).then(response => {
                 console.log(`fetching from ${process.env.REACT_APP_API_GRAPHQL_URL}`);
-                setGQLData(DEMO_TEAMS.filter(t => t.country === selectedCountry));
-            }, 1000);
+                setGQLData(response.data.teams);
+            });
         }
-    }, [selectedCountry])
+    }, [selectedCountry]);
 
     return (
         <>
             <h1>Top Teams</h1>
 
             <Container maxWidth="100%"
-                       sx={{backgroundColor: 'background.default', padding: "2rem", borderRadius: "1rem"}}>
+                sx={{ backgroundColor: 'background.default', padding: "2rem", borderRadius: "1rem" }}>
                 <Box>
-                    <h2 style={{color: "white"}}>Options</h2>
+                    <h2 style={{ color: "white" }}>Options</h2>
                     <FormControl fullWidth>
                         <InputLabel id="countries-select-label">Country</InputLabel>
                         <Select
@@ -90,7 +97,7 @@ function TopTeams() {
                                 procData.map(data => <li>{data.team}</li>)
                             }
                         </ul> :
-                        selectedCountry ? <CircularProgress/> : "--"
+                        selectedCountry ? <CircularProgress /> : "--"
                 }
                 <h2>Results <small>(GraphQL)</small></h2>
                 {
@@ -100,7 +107,7 @@ function TopTeams() {
                                 gqlData.map(data => <li>{data.team}</li>)
                             }
                         </ul> :
-                        selectedCountry ? <CircularProgress/> : "--"
+                        selectedCountry ? <CircularProgress /> : "--"
                 }
             </Container>
         </>

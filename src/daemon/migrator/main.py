@@ -174,7 +174,7 @@ def print_psycopg2_exception(ex):
 
 
 if __name__ == "__main__":
-
+    time.sleep(2)
     db_org = psycopg2.connect(
         host='db-xml', database='is', user='is', password='is')
     db_dst = psycopg2.connect(
@@ -190,7 +190,7 @@ if __name__ == "__main__":
 
         try:
             db_org = psycopg2.connect(
-                host='db-xml', database='is', user='is', password='is')
+                 host='db-xml', database='is', user='is', password='is')
             db_dst = psycopg2.connect(
                 host='db-rel', database='is', user='is', password='is')
         except OperationalError as err:
@@ -226,7 +226,7 @@ if __name__ == "__main__":
             insert_horario(db_dst, horario)
         if (station):
             insert_station(db_dst, station)
-        # print_horario(db_dst)
+        
 
         migrated(db_org)
         db_org.close()

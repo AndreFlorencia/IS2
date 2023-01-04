@@ -5,7 +5,6 @@ CREATE EXTENSION IF NOT EXISTS POSTGIS_TOPOLOGY;
 CREATE TABLE country (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   nome varchar(50) NOT NULL,
-  geom GEOMETRY,
   created_on TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_on TIMESTAMP NOT NULL DEFAULT NOW()
   );
@@ -33,6 +32,7 @@ CREATE TABLE station (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   name text NOT NULL,
   class text,
+  geom GEOMETRY,
   country_id uuid REFERENCES country (id),
   horario_id uuid REFERENCES horario (id),
   iata text,

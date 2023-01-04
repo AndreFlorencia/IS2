@@ -1,23 +1,25 @@
-import Players from "../Tables/Players";
+import Countries from "../Tables/Countries"
+import FusoHorario from "../Tables/FusoHorario";
+import Stations from "../Tables/Stations";
 
 const Sections = [
 
     {
-        id: "players",
-        label: "Players",
-        content: <Players/>
+        id: "stations",
+        label: "Stations",
+        content: <Stations />
     },
 
     {
-        id: "teams",
-        label: "Teams",
-        content: <h1>Teams - Work in progresss</h1>
+        id: "fusoHorario",
+        label: "Fuso-Horario",
+        content: <FusoHorario />
     },
 
     {
         id: "countries",
         label: "Countries",
-        content: <h1>Countries - Work in progress</h1>
+        content: <Countries />
     }
 
 ];
