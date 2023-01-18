@@ -5,7 +5,10 @@ from xmlrpc.server import SimpleXMLRPCRequestHandler
 from functions.string_length import string_length
 from functions.string_reverse import string_reverse
 
+
 PORT = int(sys.argv[1]) if len(sys.argv) >= 2 else 9000
+
+
 
 if __name__ == "__main__":
     class RequestHandler(SimpleXMLRPCRequestHandler):
@@ -17,7 +20,7 @@ if __name__ == "__main__":
         def signal_handler(signum, frame):
             print("received signal")
             server.server_close()
-
+        
             # perform clean up, etc. here...
             print("exiting, gracefully")
             sys.exit(0)
